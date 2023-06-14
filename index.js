@@ -81,7 +81,7 @@ async function main() {
 
   l(
     chalk.white('This tool will now:\n'),
-    `1. Clone create-chat-app-client client into ${chalk.underline(folder)}\n`,
+    `1. Clone create-chat-app-client into ${chalk.underline(folder)}\n`,
     `2. Install dependencies via npm\n`,
     `3. Create required database on Appwrite\n`,
     `4. Create required storage buckets on Appwrite\n`,
@@ -231,6 +231,19 @@ async function main() {
 
     try {
       await dbs.createIndex('chat', 'profiles', 'index_2', 'fulltext', [ 'username' ], [ 'ASC' ]);
+    }
+    catch (e) {
+      hasError = true;
+      await sleep(1000);
+    }
+  }
+  while (hasError);
+
+  do {
+    hasError = false;
+
+    try {
+      await dbs.createIndex('chat', 'channels', 'index_1', 'key', [ 'archived' ], [ 'ASC' ]);
     }
     catch (e) {
       hasError = true;
