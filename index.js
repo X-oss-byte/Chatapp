@@ -54,7 +54,7 @@ async function main() {
     type: 'text',
     name: 'title',
     message: 'What is your community called?',
-    validate: v => v.length > 0
+    validate: (v) => v.length > 0
   });
 
   const folder = title.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`'"~()]/g, '').replace(/\s/g, '-');
@@ -72,9 +72,18 @@ async function main() {
   });
 
   const {speechlyAppId} = await prompts({
-    type: 'password',
+    type: 'text',
     name: 'speechlyAppId',
     message: 'Please enter your Speechly app ID:'
+  });
+
+  const {adminEmail} = await prompts({
+    type: 'text',
+    name: 'adminEmail',
+    message: 'Please enter the email for the first admin account (probably your\'s):',
+    validate: (v) => v.toLowerCase().match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    )
   });
 
   br();
@@ -86,7 +95,8 @@ async function main() {
     `3. Create required database on Appwrite\n`,
     `4. Create required storage buckets on Appwrite\n`,
     `5. Deploy required functions on Appwrite\n`,
-    `6. Populate your client's configuration file`
+    `6. Register ${adminEmail} as the first admin user\n`,
+    `7. Populate your client's configuration file`,
   );
 
   br();
@@ -105,7 +115,7 @@ async function main() {
   br();
 
   await exec(
-    `%s [1/6] Cloning create-chat-app client into ./${folder}...`,
+    `%s [1/7] Cloning create-chat-app client into ./${folder}...`,
     `git clone git@github.com:saricden/create-chat-app-client.git ${folder} --quiet`
   );
 
@@ -114,11 +124,11 @@ async function main() {
   shell.cd('..');
 
   await exec(
-    '%s [2/6] Installing dependencies via npm...',
+    '%s [2/7] Installing dependencies via npm...',
     `cd ${folder} && npm install --silent`
   );
 
-  startSpinner('%s [3/6] Creating database on Appwrite... ');
+  startSpinner('%s [3/7] Creating database on Appwrite... ');
 
   const client = new Client();
   const dbs = new Databases(client);
@@ -131,8 +141,6 @@ async function main() {
   client.setKey(apiKey);
 
   await dbs.create('chat', 'chat');
-
-  await teams.create('admin', 'admin');
 
   await Promise.all([
     dbs.createCollection('chat', 'users', 'users', [
@@ -287,7 +295,7 @@ async function main() {
 
   stopSpinner();
 
-  startSpinner('%s [4/6] Creating storage buckets on Appwrite... ');
+  startSpinner('%s [4/7] Creating storage buckets on Appwrite... ');
 
   await Promise.all([
     storage.createBucket('profile_pictures', 'profile_pictures', [
@@ -307,7 +315,7 @@ async function main() {
 
   stopSpinner();
 
-  startSpinner('%s [5/6] Deploying Appwrite functions...');
+  startSpinner('%s [5/7] Deploying Appwrite functions...');
 
   const keys = webpush.generateVAPIDKeys();
   const {publicKey, privateKey} = keys;
@@ -359,6 +367,11 @@ async function main() {
       'watchNewMessages',
       'vapidPrivateKey',
       privateKey
+    ),
+    functions.createVariable(
+      'watchNewMessages',
+      'adminEmail',
+      adminEmail
     )
   ]);
 
@@ -371,7 +384,15 @@ async function main() {
 
   stopSpinner();
 
-  startSpinner(`%s [6/6] Writing client configuration...`);
+  startSpinner(`%s [6/7] Registering ${adminEmail} as first admin user...`);
+
+  await teams.create('admin', 'admin');
+
+  await teams.createMembership('admin', [ 'owner' ], 'http://localhost:5146/', adminEmail);
+  
+  stopSpinner();
+
+  startSpinner(`%s [7/7] Writing client configuration...`);
 
   let packageJSON = await readFile(`./${folder}/package.json`);
 

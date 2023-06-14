@@ -1,6 +1,6 @@
 {
   "name": "create-chat-app",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "",
   "main": "index.js",
   "type": "module",
@@ -8,8 +8,7 @@
     "create-chat-app": "index.js"
   },
   "scripts": {
-    "gzip-getVapidPublicKey": "tar -pczf functions/getVapidPublicKey.tar.gz functions/getVapidPublicKey",
-    "gzip-watchNewMessages": "tar -pczf functions/watchNewMessages.tar.gz functions/watchNewMessages"
+    "gzip-functions": "tar -pczf functions/getVapidPublicKey.tar.gz functions/getVapidPublicKey && tar -pczf functions/watchNewMessages.tar.gz functions/watchNewMessages"
   },
   "author": "",
   "license": "ISC",

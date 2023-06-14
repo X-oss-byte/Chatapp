@@ -4,9 +4,8 @@ const {Client, Databases, Query: q} = require('node-appwrite');
 module.exports = async (req, res) => {
   const client = new Client();
   const dbs = new Databases(client);
-  const {APPWRITE_FUNCTION_PROJECT_ID: projectId, apiKey, vapidPublicKey, vapidPrivateKey} = req.variables;
+  const {APPWRITE_FUNCTION_PROJECT_ID: projectId, apiKey, vapidPublicKey, vapidPrivateKey, adminEmail} = req.variables;
   const {message, posted_at, user_id, tagged_user_ids, from_user_avatar_url} = JSON.parse(req.variables.APPWRITE_FUNCTION_EVENT_DATA);
-  const adminEmail = 'kirk@saricden.com';
 
   client.setEndpoint('https://cloud.appwrite.io/v1');
   client.setProject(projectId);
