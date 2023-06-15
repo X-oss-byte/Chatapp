@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
           },
           [
             Permission.read(Role.user(id)),
-            Permission.update(Role.user(id))
+            Permission.delete(Role.user(id))
           ]
         )
       );
