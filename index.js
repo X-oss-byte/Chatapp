@@ -176,7 +176,9 @@ async function main() {
       Permission.create(Role.team('admin')),
       Permission.read(Role.team('admin')),
       Permission.update(Role.team('admin'))
-    ], false)
+    ], false),
+
+    dbs.createCollection('chat', 'notifications', 'notifications', [ ], true)
   ]);
 
   await Promise.all([
@@ -202,7 +204,14 @@ async function main() {
     dbs.createDatetimeAttribute('chat', 'messages', 'posted_at', true),
     dbs.createStringAttribute('chat', 'messages', 'audio_id', 30, false),
     dbs.createStringAttribute('chat', 'messages', 'tagged_user_ids', 30, false, undefined, true),
-    dbs.createStringAttribute('chat', 'messages', 'from_user_avatar_url', 500, false)
+    dbs.createStringAttribute('chat', 'messages', 'from_user_avatar_url', 500, false),
+
+    dbs.createStringAttribute('chat', 'notifications', 'for_user_id', 30, true),
+    dbs.createDatetimeAttribute('chat', 'notifications', 'posted_at', true),
+    dbs.createStringAttribute('chat', 'notifications', 'from_username', 30, true),
+    dbs.createStringAttribute('chat', 'notifications', 'message', 500, true),
+    dbs.createStringAttribute('chat', 'notifications', 'from_avatar_url', 300, false),
+    dbs.createBooleanAttribute('chat', 'notifications', 'read', false, false)
   ]);
 
   // Attributes sometimes have some latency in their availability, so we need to try/catch the following createIndex calls until they succeed
@@ -278,6 +287,48 @@ async function main() {
 
     try {
       await dbs.createIndex('chat', 'messages', 'index_2', 'key', [ 'posted_at' ], [ 'ASC' ]);
+      break;
+    }
+    catch (e) {
+      hasError = true;
+      await sleep(1000);
+    }
+  }
+  while (hasError);
+
+  do {
+    hasError = false;
+
+    try {
+      await dbs.createIndex('chat', 'notifications', 'index_1', 'key', [ 'for_user_id' ], [ 'ASC' ]);
+      break;
+    }
+    catch (e) {
+      hasError = true;
+      await sleep(1000);
+    }
+  }
+  while (hasError);
+
+  do {
+    hasError = false;
+
+    try {
+      await dbs.createIndex('chat', 'notifications', 'index_2', 'key', [ 'posted_at' ], [ 'ASC' ]);
+      break;
+    }
+    catch (e) {
+      hasError = true;
+      await sleep(1000);
+    }
+  }
+  while (hasError);
+
+  do {
+    hasError = false;
+
+    try {
+      await dbs.createIndex('chat', 'notifications', 'index_3', 'key', [ 'read' ], [ 'ASC' ]);
       break;
     }
     catch (e) {

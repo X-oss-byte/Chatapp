@@ -1,6 +1,6 @@
 {
   "name": "create-chat-app",
-  "version": "1.0.5",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "type": "module",

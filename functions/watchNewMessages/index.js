@@ -1,5 +1,5 @@
 const webpush = require('web-push');
-const {Client, Databases, Query: q} = require('node-appwrite');
+const {Client, Databases, Query: q, ID, Permission, Role} = require('node-appwrite');
 
 module.exports = async (req, res) => {
   const client = new Client();
@@ -19,6 +19,7 @@ module.exports = async (req, res) => {
     );
     const [fromProfile] = fromProfileData.documents;
     let notificationPromises = [];
+    let notificationPromisesDB = [];
     // const avatar_url = await storage.getFileView('profile_pictures', fromProfile.avatar_id);
 
     webpush.setVapidDetails(
@@ -37,6 +38,25 @@ module.exports = async (req, res) => {
     for (let i in tagged_user_ids) {
       const id = tagged_user_ids[i];
 
+      notificationPromisesDB.push(
+        dbs.createDocument(
+          'chat',
+          'notifications',
+          ID.unique(),
+          {
+            for_user_id: id,
+            posted_at: new Date(posted_at),
+            from_username: fromProfile.username,
+            message: message,
+            from_avatar_url: from_user_avatar_url,
+            read: false
+          },
+          [
+            Permission.update(Role.user(id))
+          ]
+        )
+      );
+
       notificationPromises.push(
         dbs.listDocuments('chat', 'profiles', [ q.equal('auth_id', [id]) ]).then(async (data) => {
           const [profile] = data.documents;
@@ -52,7 +72,10 @@ module.exports = async (req, res) => {
       );
     }
 
-    await Promise.all(notificationPromises);
+    await Promise.all([
+
+      ...notificationPromises
+    ]);
   }
 
   res.json({
