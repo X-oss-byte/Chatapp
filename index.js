@@ -300,7 +300,7 @@ async function main() {
     hasError = false;
 
     try {
-      await dbs.createIndex('chat', 'notifications', 'index_1', 'key', [ 'for_user_id' ], [ 'ASC' ]);
+      await dbs.createIndex('chat', 'notifications', 'index_1', 'key', [ 'for_user_id', 'read' ], [ 'ASC' ]);
       break;
     }
     catch (e) {
@@ -315,20 +315,6 @@ async function main() {
 
     try {
       await dbs.createIndex('chat', 'notifications', 'index_2', 'key', [ 'posted_at' ], [ 'ASC' ]);
-      break;
-    }
-    catch (e) {
-      hasError = true;
-      await sleep(1000);
-    }
-  }
-  while (hasError);
-
-  do {
-    hasError = false;
-
-    try {
-      await dbs.createIndex('chat', 'notifications', 'index_3', 'key', [ 'read' ], [ 'ASC' ]);
       break;
     }
     catch (e) {
