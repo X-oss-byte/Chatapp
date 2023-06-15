@@ -210,8 +210,7 @@ async function main() {
     dbs.createDatetimeAttribute('chat', 'notifications', 'posted_at', true),
     dbs.createStringAttribute('chat', 'notifications', 'from_username', 30, true),
     dbs.createStringAttribute('chat', 'notifications', 'message', 500, true),
-    dbs.createStringAttribute('chat', 'notifications', 'from_avatar_url', 300, false),
-    dbs.createBooleanAttribute('chat', 'notifications', 'read', false, false)
+    dbs.createStringAttribute('chat', 'notifications', 'from_avatar_url', 300, false)
   ]);
 
   // Attributes sometimes have some latency in their availability, so we need to try/catch the following createIndex calls until they succeed

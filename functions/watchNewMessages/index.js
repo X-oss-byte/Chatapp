@@ -48,8 +48,7 @@ module.exports = async (req, res) => {
             posted_at: new Date(posted_at),
             from_username: fromProfile.username,
             message: message,
-            from_avatar_url: from_user_avatar_url,
-            read: false
+            from_avatar_url: from_user_avatar_url
           },
           [
             Permission.read(Role.user(id)),
