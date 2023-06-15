@@ -52,6 +52,7 @@ module.exports = async (req, res) => {
             read: false
           },
           [
+            Permission.read(Role.user(id)),
             Permission.update(Role.user(id))
           ]
         )

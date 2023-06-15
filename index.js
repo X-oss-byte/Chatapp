@@ -80,7 +80,7 @@ async function main() {
   const {adminEmail} = await prompts({
     type: 'text',
     name: 'adminEmail',
-    message: 'Please enter the email for the first admin account (probably your\'s):',
+    message: 'Please enter the email for the first admin account (probably your own):',
     validate: (v) => v.toLowerCase().match(
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     )
