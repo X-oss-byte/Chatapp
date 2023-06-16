@@ -22,3 +22,7 @@ Then, from your terminal run the following:
 ```
 npx create-chat-app
 ```
+
+## Demo
+
+Check out [chat.saricden.com](https://chat.saricden.com) for an example of what this tool will generate.
